@@ -1,91 +1,99 @@
 "use client";
+// Barra fija que se invierte sola sobre blanco o negro (mix-blend-mode: difference).
+// En móvil abre un menú a pantalla completa con las opciones subiendo una por una.
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Boton } from "./Boton";
 import { lenis } from "./ScrollSuave";
 import type { Contenido, Idioma } from "@/lib/content";
 
+const curva = [0.76, 0, 0.24, 1] as const;
+
 export function Nav({ t, lang }: { t: Contenido; lang: Idioma }) {
   const [abierto, setAbierto] = useState(false);
-  const [oculta, setOculta] = useState(false);
-
-  // La barra se esconde al bajar y vuelve al subir
-  useEffect(() => {
-    let ultimo = window.scrollY;
-    const f = () => {
-      const y = window.scrollY;
-      setOculta(y > 160 && y > ultimo);
-      ultimo = y;
-    };
-    window.addEventListener("scroll", f, { passive: true });
-    return () => window.removeEventListener("scroll", f);
-  }, []);
 
   useEffect(() => {
     if (abierto) lenis?.stop();
     else lenis?.start();
   }, [abierto]);
 
+  const idiomas = (
+    <div className="nav-idioma" role="group" aria-label="Idioma / Language">
+      {(["es", "en"] as const).map((l) => (
+        <Link key={l} href={`/${l}`} className={l === lang ? "on" : ""} aria-current={l === lang ? "page" : undefined}>
+          {l.toUpperCase()}
+        </Link>
+      ))}
+    </div>
+  );
+
   return (
     <>
-      <motion.header className="nav" animate={{ y: oculta && !abierto ? "-110%" : "0%" }} transition={{ duration: 0.5, ease: [0.2, 0.7, 0.1, 1] }}>
-        <div className="marco nav-fila">
-          <a className="firma" href="#inicio">
-            Gabriela Abril
-            <small>{t.nav.subtitulo}</small>
+      <header className="nav">
+        <div className="nav-fila lado">
+          <a className="nav-marca" href="#inicio">
+            Gabriela Abril®
           </a>
-          <ul className="nav-enlaces">
+          <nav className="nav-enlaces" aria-label="Principal">
             {t.nav.enlaces.map(([href, txt]) => (
-              <li key={href}>
-                <a href={href}>{txt}</a>
-              </li>
+              <a key={href} href={href}>
+                {txt}
+              </a>
             ))}
-          </ul>
-          <div className="nav-acciones">
-            <div className="idioma" role="group" aria-label="Idioma / Language">
-              {(["es", "en"] as const).map((l) => (
-                <Link key={l} href={`/${l}`} className={l === lang ? "on" : ""} aria-current={l === lang ? "page" : undefined} scroll={false}>
-                  {l === lang && <motion.span layoutId="idioma-pastilla" className="pastilla" transition={{ type: "spring", stiffness: 380, damping: 30 }} />}
-                  <span className="idioma-txt">{l.toUpperCase()}</span>
-                </Link>
-              ))}
-            </div>
-            <Boton href="#contacto" lleno chico className="solo-escritorio">
-              {t.nav.agendar}
-            </Boton>
+          </nav>
+          <div className="nav-der">
+            {idiomas}
+            <a className="nav-agendar" href="#contacto">
+              {t.nav.agendar} ↗
+            </a>
             <button type="button" className="nav-menu" onClick={() => setAbierto(true)} aria-label={t.nav.menu} aria-expanded={abierto}>
-              <Menu size={20} strokeWidth={1.4} />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                <path d="M4 9h16M4 15h16" />
+              </svg>
             </button>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       <AnimatePresence>
         {abierto && (
           <motion.div
-            className="menu-movil"
+            className="menu lado"
             initial={{ clipPath: "inset(0 0 100% 0)" }}
             animate={{ clipPath: "inset(0 0 0% 0)" }}
-            exit={{ clipPath: "inset(0 0 100% 0)" }}
-            transition={{ duration: 0.7, ease: [0.7, 0, 0.2, 1] }}
+            exit={{ clipPath: "inset(100% 0 0% 0)" }}
+            transition={{ duration: 0.8, ease: curva }}
           >
-            <div className="marco menu-movil-cab">
-              <span className="firma">Gabriela Abril</span>
-              <button type="button" className="nav-menu" onClick={() => setAbierto(false)} aria-label={t.nav.cerrar}>
-                <X size={22} strokeWidth={1.4} />
+            <div className="menu-cab">
+              <span className="nav-marca">Gabriela Abril®</span>
+              <button type="button" className="nav-menu" style={{ display: "flex" }} onClick={() => setAbierto(false)} aria-label={t.nav.cerrar}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
               </button>
             </div>
-            <ul className="marco">
-              {[...t.nav.enlaces, ["#contacto", t.nav.agendar] as [string, string]].map(([href, txt], i) => (
-                <motion.li key={href} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + i * 0.06, duration: 0.6 }}>
-                  <a href={href} onClick={() => setAbierto(false)}>
+            <ul>
+              {[...t.nav.enlaces].map(([href, txt], i) => (
+                <li key={href}>
+                  <motion.a
+                    href={href}
+                    onClick={() => setAbierto(false)}
+                    initial={{ y: "105%" }}
+                    animate={{ y: "0%" }}
+                    exit={{ y: "-105%" }}
+                    transition={{ duration: 0.9, ease: curva, delay: 0.25 + i * 0.06 }}
+                  >
                     {txt}
-                  </a>
-                </motion.li>
+                  </motion.a>
+                </li>
               ))}
             </ul>
+            <div className="menu-pie">
+              {idiomas}
+              <a href="#contacto" onClick={() => setAbierto(false)}>
+                {t.nav.agendar} ↗
+              </a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

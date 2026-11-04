@@ -1,96 +1,96 @@
 "use client";
-import dynamic from "next/dynamic";
-import { motion } from "motion/react";
-import { Titular } from "./Titular";
-import { Boton } from "./Boton";
-import { tonos, WHATSAPP, type Contenido } from "@/lib/content";
-import { elegirTono, useTono } from "@/lib/tono";
-import { useMovil, useReducido, useWebGL } from "@/lib/hooks";
+// Hero: mitad texto (blanco) y mitad video. Con el scroll la sección queda fija y el video crece
+// hasta llenar la pantalla; el texto se va y aparece el titular sobre el video.
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
+import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
+import { Magnetico } from "./Magnetico";
+import { WHATSAPP, type Contenido } from "@/lib/content";
 
-const DienteHero = dynamic(() => import("./three/DienteHero"), { ssr: false, loading: () => <Poster /> });
+gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
-// Imagen de reposo mientras carga el 3D (o si el dispositivo no tiene WebGL)
-function Poster() {
-  return (
-    <div className="poster" aria-hidden="true">
-      <span className="poster-disco" />
-      <svg viewBox="-0.6 -0.8 1.2 1.6" className="poster-diente">
-        <path d="M-0.39 0.66 Q0 0.7 0.37 0.66 Q0.475 0.65 0.465 0.5 C0.465 0.08 0.41 -0.36 0.3 -0.56 Q0 -0.8 -0.3 -0.56 C-0.425 -0.36 -0.47 0.08 -0.455 0.56 Q-0.45 0.665 -0.39 0.66Z" />
-      </svg>
-    </div>
+export function Hero({ t }: { t: Contenido }) {
+  const raiz = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const q = gsap.utils.selector(raiz);
+
+      // Entrada: líneas del titular suben desde una máscara (después de la intro)
+      const split = SplitText.create(q(".hero-titulo")[0], { type: "lines", mask: "lines", linesClass: "linea-split" });
+      if (!reducido) {
+        const entrada = gsap.timeline({ delay: document.documentElement.dataset.intro === "1" ? 1.9 : 0.2 });
+        entrada
+          .from(split.lines, { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.09 })
+          .from(q(".hero-ceja, .hero-baja > *"), { y: 18, opacity: 0, duration: 1, ease: "expo.out", stagger: 0.06 }, "-=0.9")
+          .from(q(".hero-video"), { clipPath: window.innerWidth > 760 ? "inset(0 0 0 100%)" : "inset(100% 0 0 0)", duration: 1.6, ease: "expo.inOut" }, 0)
+          .from(q(".hero-video video"), { scale: 1.4, duration: 2.2, ease: "expo.out" }, 0.2);
+      }
+      if (reducido) return () => split.revert();
+
+      const mm = gsap.matchMedia();
+      mm.add({ escritorio: "(min-width: 761px)", movil: "(max-width: 760px)" }, (ctx) => {
+        const { escritorio } = ctx.conditions as { escritorio: boolean };
+        const tl = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: { trigger: q(".hero-pin")[0], start: "top top", end: "+=150%", pin: true, scrub: 0.8, anticipatePin: 1 },
+        });
+        tl.fromTo(q(".hero-video"), { clipPath: escritorio ? "inset(0% 0% 0% 50%)" : "inset(54% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1 }, 0)
+          .fromTo(q(".hero-video video"), { scale: 1.18 }, { scale: 1, duration: 1 }, 0)
+          .to(q(".hero-texto"), { xPercent: escritorio ? -18 : 0, yPercent: escritorio ? 0 : -12, opacity: 0, duration: 0.55 }, 0)
+          .fromTo(q(".hero-video-capa"), { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.7)
+          .from(q(".hero-video-titulo > span"), { yPercent: 60, opacity: 0, stagger: 0.08, duration: 0.3 }, 0.72);
+      });
+      return () => {
+        mm.revert();
+        split.revert();
+      };
+    },
+    { scope: raiz }
   );
-}
-
-export function Hero({ t, lang }: { t: Contenido; lang: "es" | "en" }) {
-  const indice = useTono();
-  const movil = useMovil();
-  const reducido = useReducido();
-  const webgl = useWebGL();
-  const tono = tonos[indice];
 
   return (
-    <div className="hero" id="inicio">
-      <div className="marco hero-grid">
-        <div className="hero-texto">
-          <motion.p className="ceja" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }}>
-            {t.hero.ceja}
-          </motion.p>
-          <Titular as="h1" alCargar retraso={0.15} className="hero-titulo">
-            {t.hero.titulo[0]}
+    <section className="hero" ref={raiz} id="inicio">
+      <div className="hero-pin">
+        <div className="hero-texto lado">
+          <span className="ceja hero-ceja">{t.hero.ceja}</span>
+          <h1 className="hero-titulo ancha">
+            {t.hero.lineas[0]}
             <br />
-            {t.hero.titulo[1]}
-            <br />
-            <em>{t.hero.tituloItalica}</em>
-          </Titular>
-          <svg className="arco-sonrisa" viewBox="0 0 420 40" aria-hidden="true">
-            <path d="M2 4 C 120 44, 300 44, 418 4" />
-          </svg>
-          <motion.div className="hero-baja" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.7 }}>
-            <p className="lead">{t.hero.lead}</p>
-            <div className="ctas">
-              <Boton href={`https://wa.me/${WHATSAPP}`} externo lleno>
-                {t.hero.ctaPrincipal}
-              </Boton>
-              <Boton href="#casos">{t.hero.ctaSecundario}</Boton>
+            {t.hero.lineas[1]}
+            <span className="it">{t.hero.italica}</span>
+          </h1>
+          <div className="hero-baja">
+            <p>{t.hero.texto}</p>
+            <Magnetico>
+              <a className="boton boton-negro" href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener" data-cursor="WhatsApp">
+                {t.hero.cta} <span className="boton-flecha">↗</span>
+              </a>
+            </Magnetico>
+            <span className="hero-scroll">{t.hero.scroll} ↓</span>
+          </div>
+        </div>
+
+        <div className="hero-video">
+          {/* PENDIENTE: reemplazar por el video real de Gabriela (mp4 H.264, 1920×1080, 10–15 s, sin audio) */}
+          <video src="/video/hero.mp4" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
+          <div className="hero-video-capa lado">
+            <h2 className="hero-video-titulo ancha">
+              <span style={{ display: "block" }}>{t.hero.videoTitulo[0]}</span>
+              <span style={{ display: "block" }}>
+                {t.hero.videoTitulo[1]} <span className="it">{t.hero.videoItalica}</span>
+              </span>
+            </h2>
+            <div className="hero-video-pie">
+              <span>Gabriela Abril</span>
+              <span>{t.hero.videoPie}</span>
             </div>
-          </motion.div>
-        </div>
-
-        <div className="hero-3d">
-          {webgl && !reducido ? <DienteHero movil={movil} /> : <Poster />}
-          <div className="hero-3d-pie">
-            <span className="ceja">{t.hero.tono}</span>
-            <motion.b key={tono.codigo} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              {tono.codigo}
-            </motion.b>
-            <span>{lang === "es" ? tono.es : tono.en}</span>
           </div>
         </div>
       </div>
-
-      <div className="marco">
-        <div className="guia">
-          <div className="guia-cab">
-            <span className="ceja">{t.hero.guiaCeja}</span>
-            <p>{t.hero.guiaTexto}</p>
-          </div>
-          <div className="tabs" role="radiogroup" aria-label={t.hero.guiaCeja}>
-            {tonos.map((x, i) => (
-              <button
-                key={x.codigo}
-                type="button"
-                role="radio"
-                aria-checked={i === indice}
-                className={"tab" + (i === indice ? " activo" : "")}
-                style={{ ["--c" as string]: x.color }}
-                onClick={() => elegirTono(i)}
-              >
-                <span>{x.codigo}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
   );
 }
