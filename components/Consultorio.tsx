@@ -38,7 +38,7 @@ export function Consultorio({ t }: { t: Contenido }) {
   );
 
   return (
-    <section className="consultorio" ref={raiz} id="consultorio">
+    <section className="cons" ref={raiz} id="consultorio">
       <div className="cons-fijo">
       <div className="lado">
         <div className="seccion-cab">

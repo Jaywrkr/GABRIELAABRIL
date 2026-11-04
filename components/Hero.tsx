@@ -1,92 +1,104 @@
 "use client";
-// Hero: mitad texto (blanco) y mitad video. Con el scroll la sección queda fija y el video crece
-// hasta llenar la pantalla; el texto se va y aparece el titular sobre el video.
+// Hero como en la referencia: mitad fondo claro, mitad video. El título cruza las dos mitades
+// (oscuro sobre el claro, blanco sobre el video). Los clips rotan solos. Con el scroll el video
+// llena la pantalla y una frase enorme cruza de derecha a izquierda.
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
-import { Magnetico } from "./Magnetico";
-import { WHATSAPP, type Contenido } from "@/lib/content";
+import { useEffect, useRef, useState } from "react";
+import { CLIPS_HERO, type Contenido } from "@/lib/content";
 
 gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
+function Titulo({ t }: { t: Contenido }) {
+  return (
+    <h1 className="hero-titulo ancha" aria-hidden="true">
+      <span className="fila">{t.hero.titulo[0]}</span>
+      <span className="fila">{t.hero.titulo[1]}</span>
+      <span className="fila it">{t.hero.italica}</span>
+    </h1>
+  );
+}
+
 export function Hero({ t }: { t: Contenido }) {
   const raiz = useRef<HTMLElement>(null);
+  const [clip, setClip] = useState(0);
+
+  // Rotación de clips cada 4,5 s
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => setClip((c) => (c + 1) % CLIPS_HERO.length), 4500);
+    return () => clearInterval(id);
+  }, []);
 
   useGSAP(
     () => {
-      const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const q = gsap.utils.selector(raiz);
+      const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reducido) return;
+      const movil = window.matchMedia("(max-width: 760px)").matches;
 
-      // Entrada: líneas del titular suben desde una máscara (después de la intro)
-      const split = SplitText.create(q(".hero-titulo")[0], { type: "lines", mask: "lines", linesClass: "linea-split" });
-      if (!reducido) {
-        const entrada = gsap.timeline({ delay: document.documentElement.dataset.intro === "1" ? 1.9 : 0.2 });
-        entrada
-          .from(split.lines, { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.09 })
-          .from(q(".hero-ceja, .hero-baja > *"), { y: 18, opacity: 0, duration: 1, ease: "expo.out", stagger: 0.06 }, "-=0.9")
-          .from(q(".hero-video"), { clipPath: window.innerWidth > 760 ? "inset(0 0 0 100%)" : "inset(100% 0 0 0)", duration: 1.6, ease: "expo.inOut" }, 0)
-          .from(q(".hero-video video"), { scale: 1.4, duration: 2.2, ease: "expo.out" }, 0.2);
-      }
-      if (reducido) return () => split.revert();
+      // Entrada: las filas del título suben (en las dos capas a la vez) y el video se abre desde el borde
+      const filas = q(".hero-titulo .fila");
+      const espera = document.documentElement.dataset.intro === "1" ? 1.8 : 0.15;
+      const entrada = gsap.timeline({ delay: espera });
+      entrada
+        .from(filas, { yPercent: 40, opacity: 0, filter: "blur(18px)", duration: 1.6, ease: "expo.out", stagger: { each: 0.1, grid: [2, 3], from: "start" } }, 0)
+        .from(q(".hero-video"), { clipPath: movil ? "inset(100% 0% 0% 0%)" : "inset(0% 0% 0% 100%)", duration: 1.8, ease: "expo.inOut" }, 0)
+        .from(q(".hero-clips"), { scale: 1.35, duration: 2.4, ease: "expo.out" }, 0.2)
+        .from(q(".hero-pie > *"), { y: 16, opacity: 0, duration: 1, ease: "expo.out", stagger: 0.05 }, 0.9);
 
-      const mm = gsap.matchMedia();
-      mm.add({ escritorio: "(min-width: 761px)", movil: "(max-width: 760px)" }, (ctx) => {
-        const { escritorio } = ctx.conditions as { escritorio: boolean };
-        const tl = gsap.timeline({
-          defaults: { ease: "none" },
-          scrollTrigger: { trigger: q(".hero-pin")[0], start: "top top", end: "+=150%", pin: true, scrub: 0.8, anticipatePin: 1 },
-        });
-        tl.fromTo(q(".hero-video"), { clipPath: escritorio ? "inset(0% 0% 0% 50%)" : "inset(54% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1 }, 0)
-          .fromTo(q(".hero-video video"), { scale: 1.18 }, { scale: 1, duration: 1 }, 0)
-          .to(q(".hero-texto"), { xPercent: escritorio ? -18 : 0, yPercent: escritorio ? 0 : -12, opacity: 0, duration: 0.55 }, 0)
-          .fromTo(q(".hero-video-capa"), { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.7)
-          .from(q(".hero-video-titulo > span"), { yPercent: 60, opacity: 0, stagger: 0.08, duration: 0.3 }, 0.72);
+      // Scroll: el video llena la pantalla, el título se va y la frase cruza
+      const frase = q(".hero-frase")[0] as HTMLElement;
+      const tl = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: { trigger: q(".hero-pin")[0], start: "top top", end: "+=220%", pin: true, scrub: 1, anticipatePin: 1 },
       });
-      return () => {
-        mm.revert();
-        split.revert();
-      };
+      tl.fromTo(q(".hero-video"), { clipPath: movil ? "inset(58% 0% 0% 0%)" : "inset(0% 0% 0% 50%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.45 }, 0)
+        .fromTo(q(".hero-clips video"), { scale: 1.15 }, { scale: 1, duration: 1 }, 0)
+        .to(q(".hero-titulo"), { yPercent: -70, opacity: 0, filter: "blur(10px)", duration: 0.35 }, 0.2)
+        .to(q(".hero-pie"), { opacity: 0, duration: 0.2 }, 0.15)
+        .fromTo(frase, { x: () => window.innerWidth * 0.9 }, { x: () => -(frase.scrollWidth - window.innerWidth * 0.55), duration: 0.75, ease: "none" }, 0.3)
+
     },
     { scope: raiz }
   );
 
   return (
     <section className="hero" ref={raiz} id="inicio">
+      <h1 className="oculto" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>
+        Dra. Gabriela Abril — {t.hero.titulo.join(" ")} {t.hero.italica}
+      </h1>
       <div className="hero-pin">
-        <div className="hero-texto lado">
-          <span className="ceja hero-ceja">{t.hero.ceja}</span>
-          <h1 className="hero-titulo ancha">
-            {t.hero.lineas[0]}
-            <br />
-            {t.hero.lineas[1]}
-            <span className="it">{t.hero.italica}</span>
-          </h1>
-          <div className="hero-baja">
+        {/* Capa clara */}
+        <div className="hero-base">
+          <Titulo t={t} />
+          <div className="hero-pie lado">
             <p>{t.hero.texto}</p>
-            <Magnetico>
-              <a className="boton boton-negro" href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener" data-cursor="WhatsApp">
-                {t.hero.cta} <span className="boton-flecha">↗</span>
-              </a>
-            </Magnetico>
-            <span className="hero-scroll">{t.hero.scroll} ↓</span>
           </div>
         </div>
 
+        {/* Capa de video: misma posición del título, en blanco */}
         <div className="hero-video">
-          {/* PENDIENTE: reemplazar por el video real de Gabriela (mp4 H.264, 1920×1080, 10–15 s, sin audio) */}
-          <video src="/video/hero.mp4" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
-          <div className="hero-video-capa lado">
-            <h2 className="hero-video-titulo ancha">
-              <span style={{ display: "block" }}>{t.hero.videoTitulo[0]}</span>
-              <span style={{ display: "block" }}>
-                {t.hero.videoTitulo[1]} <span className="it">{t.hero.videoItalica}</span>
-              </span>
-            </h2>
-            <div className="hero-video-pie">
-              <span>Gabriela Abril</span>
-              <span>{t.hero.videoPie}</span>
+          <div className="hero-clips" aria-hidden="true">
+            {CLIPS_HERO.map((src, i) => (
+              <video key={src} className={i === clip ? "on" : ""} src={src} autoPlay muted loop playsInline preload={i === 0 ? "auto" : "metadata"} />
+            ))}
+          </div>
+          <div className="hero-velo" aria-hidden="true" />
+          <Titulo t={t} />
+          <p className="hero-frase ancha" aria-hidden="true">
+            {t.hero.frase[0]} <span className="it">{t.hero.frase[1]}</span> {t.hero.frase[2]}
+          </p>
+          <div className="hero-pie lado">
+            <span className="ceja" style={{ color: "inherit" }}>
+              {t.hero.pie}
+            </span>
+            <div className="hero-indicador" aria-hidden="true">
+              {CLIPS_HERO.map((src, i) => (
+                <span key={src + clip} className={i === clip ? "on" : ""} />
+              ))}
             </div>
           </div>
         </div>

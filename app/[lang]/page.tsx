@@ -4,12 +4,13 @@ import { Intro } from "@/components/Intro";
 import { Cursor } from "@/components/Cursor";
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
-import { Cinta } from "@/components/Cinta";
-import { Manifiesto } from "@/components/Manifiesto";
-import { Tratamientos } from "@/components/Tratamientos";
+import { Objetivo } from "@/components/Objetivo";
+import { TratamientosFijos } from "@/components/TratamientosFijos";
+import { Tecnologia } from "@/components/Tecnologia";
 import { Caso } from "@/components/Caso";
-import { Estudio } from "@/components/Estudio";
+import { Gabriela } from "@/components/Gabriela";
 import { Consultorio } from "@/components/Consultorio";
+import { Cierre } from "@/components/Cierre";
 import { Contacto } from "@/components/Contacto";
 
 export default async function Pagina({ params }: { params: Promise<{ lang: string }> }) {
@@ -24,13 +25,14 @@ export default async function Pagina({ params }: { params: Promise<{ lang: strin
       <Nav t={t} lang={lang} />
       <main>
         <Hero t={t} />
-        <Cinta items={t.cinta} />
-        <Manifiesto t={t} />
-        <Tratamientos t={t} />
+        <Objetivo t={t} />
+        <TratamientosFijos t={t} />
+        <Tecnologia t={t} />
         <Caso t={t} />
-        <Estudio t={t} />
+        <Gabriela t={t} />
         <Consultorio t={t} />
-        <Contacto t={t} />
+        <Cierre t={t} />
+        <Contacto t={t} lang={lang} />
       </main>
     </>
   );

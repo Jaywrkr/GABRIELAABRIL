@@ -20,7 +20,7 @@ npm run dev     # http://localhost:3000 → /es
 |---|---|
 | Textos ES/EN, WhatsApp, Instagram, link a Sebastián | `lib/content.ts` |
 | Colores, tipografía, layout | `app/globals.css` |
-| Video del hero | `public/video/hero.mp4` (H.264, 1920×1080, 10–15 s, sin audio) |
+| Clips del hero y video de tecnología | `public/video/` y `lib/content.ts` (`CLIPS_HERO`, `VIDEO_TECNOLOGIA`) — H.264, 1920×1080, 5–8 s, sin audio |
 | Hero que crece con el scroll | `components/Hero.tsx` |
 
 ## Pendiente de la doctora
