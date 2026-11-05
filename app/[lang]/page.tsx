@@ -11,6 +11,7 @@ import { Tecnologia } from "@/components/Tecnologia";
 import { Caso } from "@/components/Caso";
 import { Gabriela } from "@/components/Gabriela";
 import { Consultorio } from "@/components/Consultorio";
+import { Cierre } from "@/components/Cierre";
 import { Contacto } from "@/components/Contacto";
 
 export default async function Pagina({ params }: { params: Promise<{ lang: string }> }) {
@@ -32,6 +33,7 @@ export default async function Pagina({ params }: { params: Promise<{ lang: strin
         <Caso t={t} />
         <Gabriela t={t} />
         <Consultorio t={t} />
+        <Cierre t={t} />
         <Contacto t={t} lang={lang} />
       </main>
     </>
