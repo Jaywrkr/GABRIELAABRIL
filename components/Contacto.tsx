@@ -19,9 +19,11 @@ export function Contacto({ t, lang }: { t: Contenido; lang: Idioma }) {
   useGSAP(
     () => {
       const q = gsap.utils.selector(raiz);
-      revelarPalabras(q(".contacto h2")[0]);
       if (reducido()) return;
       gsap.from(q(".ig-item"), { y: 90, opacity: 0, duration: 1.3, ease: "expo.out", stagger: 0.06, scrollTrigger: { trigger: q(".ig-grid")[0], start: "top 88%" } });
+      gsap.from(q(".hablemos-titulo .letra"), { yPercent: 110, duration: 1.2, ease: "expo.out", stagger: 0.035, scrollTrigger: { trigger: q(".hablemos-titulo")[0], start: "top 85%" } });
+      gsap.from(q(".hablemos-circulo")[0], { scale: 0, rotate: -90, duration: 1.4, ease: "expo.out", scrollTrigger: { trigger: q(".hablemos-titulo")[0], start: "top 80%" } });
+      revelarPalabras(q(".form-titulo")[0]);
       gsap.from(q(".form > *"), { y: 24, opacity: 0, duration: 1, ease: "expo.out", stagger: 0.06, scrollTrigger: { trigger: q(".form")[0], start: "top 85%" } });
       gsap.from(q(".pie-marca")[0], { yPercent: 50, opacity: 0, filter: "blur(16px)", duration: 1.6, ease: "expo.out", scrollTrigger: { trigger: q(".pie-marca")[0], start: "top 98%" } });
     },
@@ -52,10 +54,23 @@ export function Contacto({ t, lang }: { t: Contenido; lang: Idioma }) {
       </section>
 
       <section className="contacto lado" id="contacto">
-        <div className="contacto-grid">
-          <h2 className="ancha">
-            {t.contacto.titulo[0]} <span className="it">{t.contacto.titulo[1]}</span>
+        <span className="ceja">{t.contacto.ceja}</span>
+        <div className="hablemos">
+          <h2 className="hablemos-titulo ancha" aria-label={t.contacto.titulo} style={{ ["--n" as string]: t.contacto.titulo.length }}>
+            {t.contacto.titulo.split("").map((l, i) => (
+              <span className="letra" key={i} aria-hidden="true">
+                {l === " " ? "\u00a0" : l}
+              </span>
+            ))}
           </h2>
+          <Magnetico fuerza={0.45}>
+            <a className="hablemos-circulo" href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener">
+              WhatsApp ↗
+            </a>
+          </Magnetico>
+        </div>
+        <div className="contacto-grid">
+          <p className="form-titulo">{t.contacto.formTitulo}</p>
           <form className="form" onSubmit={enviar}>
             <label>
               {t.contacto.nombre}

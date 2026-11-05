@@ -1,30 +1,21 @@
 "use client";
-// Barra como en la referencia: marca a la izquierda, "Menú" y "Tratamientos" al centro, idioma y
-// "Agendar cita" a la derecha. Se invierte sola sobre fondos claros y oscuros.
+// Barra fija que se invierte sola sobre blanco o negro (mix-blend-mode: difference).
+// En móvil abre un menú a pantalla completa con las opciones subiendo una por una.
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { Magnetico } from "./Magnetico";
 import { lenis } from "./ScrollSuave";
-import { WHATSAPP, type Contenido, type Idioma } from "@/lib/content";
+import type { Contenido, Idioma } from "@/lib/content";
 
 const curva = [0.76, 0, 0.24, 1] as const;
 
 export function Nav({ t, lang }: { t: Contenido; lang: Idioma }) {
-  const [menu, setMenu] = useState(false);
-  const [panel, setPanel] = useState(false);
+  const [abierto, setAbierto] = useState(false);
 
   useEffect(() => {
-    if (menu) lenis?.stop();
+    if (abierto) lenis?.stop();
     else lenis?.start();
-  }, [menu]);
-
-  useEffect(() => {
-    if (!panel) return;
-    const cerrar = () => setPanel(false);
-    window.addEventListener("scroll", cerrar, { once: true, passive: true });
-    return () => window.removeEventListener("scroll", cerrar);
-  }, [panel]);
+  }, [abierto]);
 
   const idiomas = (
     <div className="nav-idioma" role="group" aria-label="Idioma / Language">
@@ -40,90 +31,58 @@ export function Nav({ t, lang }: { t: Contenido; lang: Idioma }) {
     <>
       <header className="nav">
         <div className="nav-fila lado">
-          <a className="nav-marca" href="#inicio" aria-label="Dra. Gabriela Abril">
-            <span className="nav-sello">GA</span>
-            <span className="nav-lineas">
-              Gabriela Abril
-              <br />
-              {lang === "es" ? "Estética Dental" : "Aesthetic Dentistry"}
-            </span>
+          <a className="nav-marca" href="#inicio">
+            Gabriela Abril®
           </a>
-          <div className="nav-centro">
-            <button type="button" onClick={() => setMenu(true)} aria-expanded={menu}>
-              {t.nav.menu}
-              <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true">
-                <path d="M0 2h14M0 8h14" />
-              </svg>
-            </button>
-            <button type="button" className="solo-escritorio" onClick={() => setPanel((p) => !p)} aria-expanded={panel}>
-              {t.nav.tratamientos}
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" style={{ transform: panel ? "rotate(180deg)" : "none", transition: "transform .4s" }}>
-                <path d="M1 1l4 4 4-4" />
-              </svg>
-            </button>
-          </div>
+          <nav className="nav-enlaces" aria-label="Principal">
+            {t.nav.enlaces.map(([href, txt]) => (
+              <a key={href} href={href}>
+                {txt}
+              </a>
+            ))}
+          </nav>
           <div className="nav-der">
             {idiomas}
-            <Magnetico fuerza={0.25}>
-              <a className="pastilla-btn pastilla-clara" href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener">
-                {t.nav.agendar} <i aria-hidden="true">+</i>
-              </a>
-            </Magnetico>
+            <a className="nav-agendar" href="#contacto">
+              {t.nav.agendar} ↗
+            </a>
+            <button type="button" className="nav-menu" onClick={() => setAbierto(true)} aria-label={t.nav.menu} aria-expanded={abierto}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                <path d="M4 9h16M4 15h16" />
+              </svg>
+            </button>
           </div>
         </div>
       </header>
 
       <AnimatePresence>
-        {panel && (
-          <motion.div
-            className="panel-trat"
-            initial={{ opacity: 0, y: -10, x: "-50%", filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, x: "-50%", filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -10, x: "-50%", filter: "blur(8px)" }}
-            transition={{ duration: 0.45, ease: curva }}
-          >
-            {t.tratamientos.items.map((x, i) => (
-              <a key={x.foto} href="#tratamientos" onClick={() => setPanel(false)}>
-                <span>
-                  <span style={{ color: "#888", marginRight: 12 }}>{String(i + 1).padStart(2, "0")}</span>
-                  {x.nombre.join(" ")}
-                </span>
-                <span aria-hidden="true">↗</span>
-              </a>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {menu && (
+        {abierto && (
           <motion.div
             className="menu lado"
             initial={{ clipPath: "inset(0 0 100% 0)" }}
             animate={{ clipPath: "inset(0 0 0% 0)" }}
             exit={{ clipPath: "inset(100% 0 0% 0)" }}
-            transition={{ duration: 0.85, ease: curva }}
+            transition={{ duration: 0.8, ease: curva }}
           >
             <div className="menu-cab">
-              <span className="nav-sello">GA</span>
-              <button type="button" className="menu-cerrar" onClick={() => setMenu(false)} aria-label={t.nav.cerrar}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <span className="nav-marca">Gabriela Abril®</span>
+              <button type="button" className="nav-menu" style={{ display: "flex" }} onClick={() => setAbierto(false)} aria-label={t.nav.cerrar}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                   <path d="M6 6l12 12M18 6L6 18" />
                 </svg>
               </button>
             </div>
             <ul>
-              {t.nav.enlaces.map(([href, txt], i) => (
+              {[...t.nav.enlaces].map(([href, txt], i) => (
                 <li key={href}>
                   <motion.a
                     href={href}
-                    onClick={() => setMenu(false)}
+                    onClick={() => setAbierto(false)}
                     initial={{ y: "105%" }}
                     animate={{ y: "0%" }}
                     exit={{ y: "-105%" }}
-                    transition={{ duration: 0.9, ease: curva, delay: 0.25 + i * 0.05 }}
+                    transition={{ duration: 0.9, ease: curva, delay: 0.25 + i * 0.06 }}
                   >
-                    <small>{String(i + 1).padStart(2, "0")}</small>
                     {txt}
                   </motion.a>
                 </li>
@@ -131,7 +90,7 @@ export function Nav({ t, lang }: { t: Contenido; lang: Idioma }) {
             </ul>
             <div className="menu-pie">
               {idiomas}
-              <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener">
+              <a href="#contacto" onClick={() => setAbierto(false)}>
                 {t.nav.agendar} ↗
               </a>
             </div>
