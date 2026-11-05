@@ -9,7 +9,7 @@ import { useRef, useState } from "react";
 import { Foto } from "./Foto";
 import { reducido } from "@/lib/revelar";
 import { lenis } from "./ScrollSuave";
-import type { Contenido } from "@/lib/content";
+import { REF, type Contenido } from "@/lib/content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -101,7 +101,7 @@ export function TratamientosFijos({ t }: { t: Contenido }) {
       <div className="trat-pin lado">
         <div className="trat-fotos" data-cursor={t.tratamientos.ver}>
           {items.map((x, i) => (
-            <Foto key={x.foto} etiqueta={x.foto} pendiente={t.pendiente} clara={tonos[i] === "clara"} className={`trat-foto ${tonos[i]}`} />
+            <Foto key={x.foto} src={REF.tratamientos[i]} etiqueta={x.foto} pendiente={t.pendiente} clara={tonos[i] === "clara"} className={`trat-foto ${tonos[i]}`} />
           ))}
           {items.map((x, i) => nombre(x.nombre, i))}
         </div>
@@ -110,7 +110,7 @@ export function TratamientosFijos({ t }: { t: Contenido }) {
             <span className="ceja">{t.tratamientos.ceja} · {String(activo + 1).padStart(2, "0")}</span>
             <p className="trat-resumen">{it.resumen}</p>
             <div className="trat-items">
-              <Foto className="trat-mini" etiqueta={it.foto} clara={activo % 2 === 0} />
+              <Foto className="trat-mini" src={REF.tratamientos[activo]} etiqueta={it.foto} />
               <ul>
                 {it.items.map((x) => (
                   <li key={x}>
@@ -143,7 +143,7 @@ export function TratamientosFijos({ t }: { t: Contenido }) {
         {items.map((x, i) => (
           <article key={x.foto}>
             <div className="trat-fotos">
-              <Foto className="trat-foto" etiqueta={x.foto} pendiente={t.pendiente} clara={tonos[i] === "clara"} />
+              <Foto className="trat-foto" src={REF.tratamientos[i]} etiqueta={x.foto} pendiente={t.pendiente} clara={tonos[i] === "clara"} />
               {nombre(x.nombre, i)}
             </div>
             <p>{x.resumen}</p>

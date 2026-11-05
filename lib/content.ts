@@ -243,3 +243,40 @@ const en: Contenido = {
 };
 
 export const contenido: Record<Idioma, Contenido> = { es, en };
+
+// ---------------------------------------------------------------------------
+// IMÁGENES DE REFERENCIA (Unsplash, licencia libre). Son provisionales: solo para que el cliente vea
+// cómo se va a ver la web. Se reemplazan con la sesión de fotos y video de Gabriela.
+// ---------------------------------------------------------------------------
+const u = (id: string, w = 1600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
+
+export const REF = {
+  hero: [u("1489278353717-f64c6ee8a4d2", 2000), u("1629909613654-28e377c37b09", 2000), u("1777331903190-341a3dd0441b", 2000)],
+  pastillas: [u("1677026010083-78ec7f1b84ed", 600), u("1564420228450-d9a5bc8d6565", 600)],
+  tratamientos: [
+    u("1677026010083-78ec7f1b84ed"), // diseño de sonrisa
+    u("1564420228450-d9a5bc8d6565"), // ortodoncia invisible
+    u("1606811971618-4486d14f3f99"), // restauradora
+    u("1588776814546-1ffcf47267a5"), // nuevas tecnologías
+  ],
+  tecnologiaFondo: u("1598256989800-fe5f95da9787", 2000),
+  tecnologia: [u("1593022356769-11f762e25ed9"), u("1771442873038-dda05b6ca447"), u("1606811856475-5e6fcdc6e509"), u("1564420228450-d9a5bc8d6565")],
+  antes: u("1670250492416-570b5b7343b1"),
+  despues: u("1654373535457-383a0a4d00f9"),
+  consultorio: [
+    u("1704455306251-b4634215d98f"),
+    u("1762625570087-6d98fca29531"),
+    u("1629909614456-6b1c5c94cecc"),
+    u("1629909613654-28e377c37b09"),
+    u("1648775507324-b48dd3791fa5"),
+  ],
+  instagram: [
+    u("1567516364473-233c4b6fcfbe", 600),
+    u("1681939282781-341ac4f61996", 600),
+    u("1617812191081-2a24e3f30e45", 600),
+    u("1593022356769-11f762e25ed9", 600),
+    u("1548382131-e0ebb1f0cdea", 600),
+    u("1667133295352-ef4c83620e8e", 600),
+  ],
+  cierre: u("1594756154841-ac5d160dbf46", 2000),
+};

@@ -8,7 +8,7 @@ import { useRef, type FormEvent } from "react";
 import { Foto } from "./Foto";
 import { Magnetico } from "./Magnetico";
 import { revelarPalabras, reducido } from "@/lib/revelar";
-import { INSTAGRAM, WEB_SEBASTIAN, WHATSAPP, type Contenido, type Idioma } from "@/lib/content";
+import { REF, INSTAGRAM, WEB_SEBASTIAN, WHATSAPP, type Contenido, type Idioma } from "@/lib/content";
 import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -46,7 +46,7 @@ export function Contacto({ t, lang }: { t: Contenido; lang: Idioma }) {
         </div>
         <div className="ig-grid">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Foto key={i} etiqueta={`Reel ${i + 1}`} clara={i % 3 === 1} className="ig-item" />
+            <Foto key={i} src={REF.instagram[i]} etiqueta={`Reel ${i + 1}`} clara={i % 3 === 1} className="ig-item" />
           ))}
         </div>
       </section>

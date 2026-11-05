@@ -7,7 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { Foto } from "./Foto";
 import { reducido } from "@/lib/revelar";
-import type { Contenido } from "@/lib/content";
+import { REF, type Contenido } from "@/lib/content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -31,7 +31,7 @@ export function Cierre({ t }: { t: Contenido }) {
   return (
     <section className="cierre" ref={raiz}>
       <div className="cierre-pin">
-        <Foto className="cierre-foto" etiqueta={t.cierre.foto} />
+        <Foto className="cierre-foto" src={REF.cierre} etiqueta={t.cierre.foto} />
         <div className="cierre-txt lado" aria-label={t.cierre.frase.join(" ")}>
           <p className="ancha" aria-hidden="true">
             <span className="palabra">{a}</span> <span className="palabra it">{b}</span>

@@ -7,7 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { Foto } from "./Foto";
 import { Titular } from "./Titular";
-import type { Contenido } from "@/lib/content";
+import { REF, type Contenido } from "@/lib/content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -55,7 +55,7 @@ export function Consultorio({ t }: { t: Contenido }) {
       <div className="cons-pin lado">
         <div className="cons-pista">
           {t.consultorio.fotos.map((f, i) => (
-            <Foto key={f} etiqueta={f} pendiente={t.pendiente} clara={i % 3 === 1} className="cons-item" />
+            <Foto key={f} src={REF.consultorio[i]} etiqueta={f} pendiente={t.pendiente} clara={i % 3 === 1} className="cons-item" />
           ))}
         </div>
       </div>

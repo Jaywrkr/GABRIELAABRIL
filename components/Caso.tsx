@@ -5,7 +5,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef, useState } from "react";
 import { Foto } from "./Foto";
 import { revelarPalabras, reducido } from "@/lib/revelar";
-import type { Contenido } from "@/lib/content";
+import { REF, type Contenido } from "@/lib/content";
 
 gsap.registerPlugin(useGSAP);
 
@@ -40,8 +40,8 @@ export function Caso({ t }: { t: Contenido }) {
         <span className="ceja">{t.caso.ceja}</span>
       </div>
       <div className="caso-marco" style={{ ["--corte" as string]: `${corte}%` }} data-cursor={t.caso.arrastra}>
-        <Foto className="caso-capa" etiqueta={t.caso.antes} />
-        <Foto className="caso-capa caso-despues" etiqueta={t.caso.despues} clara />
+        <Foto className="caso-capa" src={REF.antes} etiqueta={t.caso.antes} />
+        <Foto className="caso-capa caso-despues" src={REF.despues} etiqueta={t.caso.despues} clara />
         <div className="caso-linea" />
         <div className="caso-asa" aria-hidden="true">↔</div>
         <input type="range" min={0} max={100} step={0.1} value={corte} onChange={(e) => setCorte(+e.target.value)} aria-label={t.caso.comparar} />

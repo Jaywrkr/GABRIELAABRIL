@@ -7,7 +7,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
-import { CLIPS_HERO, type Contenido } from "@/lib/content";
+import { REF, type Contenido } from "@/lib/content";
+
+const CLIPS_HERO = REF.hero;
 
 gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
@@ -56,7 +58,7 @@ export function Hero({ t }: { t: Contenido }) {
         scrollTrigger: { trigger: q(".hero-pin")[0], start: "top top", end: "+=220%", pin: true, scrub: 1, anticipatePin: 1 },
       });
       tl.fromTo(q(".hero-video"), { clipPath: movil ? "inset(58% 0% 0% 0%)" : "inset(0% 0% 0% 50%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.45 }, 0)
-        .fromTo(q(".hero-clips video"), { scale: 1.15 }, { scale: 1, duration: 1 }, 0)
+        .fromTo(q(".hero-clips"), { y: 0 }, { y: 0, duration: 1 }, 0)
         .to(q(".hero-titulo"), { yPercent: -70, opacity: 0, filter: "blur(10px)", duration: 0.35 }, 0.2)
         .to(q(".hero-pie"), { opacity: 0, duration: 0.2 }, 0.15)
         .fromTo(frase, { x: () => window.innerWidth * 0.9 }, { x: () => -(frase.scrollWidth - window.innerWidth * 0.55), duration: 0.75, ease: "none" }, 0.3)
@@ -83,7 +85,8 @@ export function Hero({ t }: { t: Contenido }) {
         <div className="hero-video">
           <div className="hero-clips" aria-hidden="true">
             {CLIPS_HERO.map((src, i) => (
-              <video key={src} className={i === clip ? "on" : ""} src={src} autoPlay muted loop playsInline preload={i === 0 ? "auto" : "metadata"} />
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={src} className={"hero-img " + (i === clip ? "on" : "")} src={src} alt="" />
             ))}
           </div>
           <div className="hero-velo" aria-hidden="true" />

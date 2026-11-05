@@ -6,7 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Fragment, useRef } from "react";
 import { reducido } from "@/lib/revelar";
-import { CLIPS_HERO, type Contenido } from "@/lib/content";
+import { REF, type Contenido } from "@/lib/content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -38,7 +38,8 @@ export function Manifiesto({ t }: { t: Contenido }) {
             <span className={"palabra" + (t.manifiesto.italicas.includes(p) ? " it" : "")}>{p}</span>
             {pastillas.has(i) && (
               <span className="pastilla" aria-hidden="true">
-                <video src={CLIPS_HERO[i === 1 ? 1 : 2]} autoPlay muted loop playsInline preload="metadata" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={REF.pastillas[i === 1 ? 0 : 1]} alt="" />
               </span>
             )}
           </Fragment>

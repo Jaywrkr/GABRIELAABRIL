@@ -8,7 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef, useState } from "react";
 import { Foto } from "./Foto";
 import { revelarPalabras, reducido } from "@/lib/revelar";
-import { VIDEO_TECNOLOGIA, type Contenido } from "@/lib/content";
+import { REF, type Contenido } from "@/lib/content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -31,7 +31,7 @@ export function Tecnologia({ t }: { t: Contenido }) {
           { clipPath: esc ? "inset(14% 18% 14% 18% round 6px)" : "inset(8% 6% 8% 6% round 6px)" },
           { clipPath: "inset(0% 0% 0% 0% round 0px)", ease: "none", scrollTrigger: { trigger: q(".tec-video-sec")[0], start: "top top", end: "+=90%", pin: true, scrub: 0.8 } }
         );
-        gsap.fromTo(q(".tec-video video")[0], { scale: 1.25 }, { scale: 1, ease: "none", scrollTrigger: { trigger: q(".tec-video-sec")[0], start: "top bottom", end: "bottom top", scrub: true } });
+        gsap.fromTo(q(".tec-video .tec-fondo")[0], { scale: 1.25 }, { scale: 1, ease: "none", scrollTrigger: { trigger: q(".tec-video-sec")[0], start: "top bottom", end: "bottom top", scrub: true } });
         if (!esc) return;
         const fotos = q(".tec-imgs .foto");
         gsap.set(fotos, { clipPath: (i: number) => (i === 0 ? "inset(0% 0% 0% 0%)" : "inset(100% 0% 0% 0%)") });
@@ -63,7 +63,8 @@ export function Tecnologia({ t }: { t: Contenido }) {
     <div ref={raiz} id="tecnologia">
       <section className="tec-video-sec">
         <div className="tec-video">
-          <video src={VIDEO_TECNOLOGIA} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={REF.tecnologiaFondo} alt="" className="tec-fondo" />
           <span className="ceja">{t.tecnologia.video}</span>
         </div>
       </section>
@@ -78,7 +79,7 @@ export function Tecnologia({ t }: { t: Contenido }) {
           </div>
           <div className="tec-imgs">
             {t.tecnologia.lista.map((x, i) => (
-              <Foto key={x} etiqueta={x} pendiente={t.pendiente} clara={i % 2 === 0} />
+              <Foto key={x} src={REF.tecnologia[i]} etiqueta={x} pendiente={t.pendiente} clara={i % 2 === 0} />
             ))}
           </div>
           <div>
