@@ -1,5 +1,5 @@
 // Todo el texto del sitio, en español e inglés.
-// Los datos marcados como PENDIENTE se reemplazan cuando la doctora los envíe.
+// Lo que está entre [corchetes] es pendiente: se reemplaza con los datos reales de la doctora.
 
 export const idiomas = ["es", "en"] as const;
 export type Idioma = (typeof idiomas)[number];
@@ -7,137 +7,126 @@ export const esIdioma = (v: string): v is Idioma => (idiomas as readonly string[
 
 // PENDIENTE: número real de WhatsApp (formato internacional sin "+")
 export const WHATSAPP = "593900000000";
-export const WHATSAPP_VISIBLE = "+593 90 000 0000";
-// PENDIENTE: URL de la web de Sebastián cuando exista
+// PENDIENTE: usuario real de Instagram
+export const INSTAGRAM = "[usuario]";
+// PENDIENTE: URL de la web de Sebastián
 export const WEB_SEBASTIAN = "#";
 
-export type Tono = { codigo: string; color: string; es: string; en: string };
+// PENDIENTE: clips reales del hero (mp4 H.264, 1920×1080, 5–8 s cada uno, sin audio)
+export const CLIPS_HERO = ["/video/hero-1.mp4", "/video/hero-2.mp4", "/video/hero-3.mp4"];
+export const VIDEO_TECNOLOGIA = "/video/tecnologia.mp4";
 
-// Guía de color dental (sistema VITA). Colores aproximados para pantalla.
-export const tonos: Tono[] = [
-  { codigo: "A3.5", color: "#D7BD8C", es: "cálido intenso", en: "deep warm" },
-  { codigo: "A3", color: "#DFC79A", es: "cálido", en: "warm" },
-  { codigo: "A2", color: "#E7D4AC", es: "natural cálido", en: "warm natural" },
-  { codigo: "A1", color: "#EEE1C3", es: "natural luminoso", en: "bright natural" },
-  { codigo: "B1", color: "#F2E9D4", es: "el natural más claro", en: "lightest natural" },
-  { codigo: "BL4", color: "#F4EEE1", es: "blanqueado suave", en: "soft bleached" },
-  { codigo: "BL3", color: "#F6F2EA", es: "blanqueado", en: "bleached" },
-  { codigo: "BL2", color: "#F9F6F0", es: "muy blanco", en: "very white" },
-  { codigo: "BL1", color: "#FCFBF7", es: "el más blanco", en: "whitest" },
-];
+export type Tratamiento = { nombre: string[]; resumen: string; items: string[]; foto: string };
 
 const es = {
   meta: {
     titulo: "Dra. Gabriela Abril · Estética Dental en Cuenca",
     descripcion:
-      "Especialista en Odontología Restauradora y Estética Dental en Cuenca, Ecuador. Diseño de sonrisa, carillas y ortodoncia invisible.",
+      "Especialista en Restauradora y Estética Dental en Cuenca, Ecuador. Diseño de sonrisa, ortodoncia invisible y nuevas tecnologías.",
   },
   nav: {
-    subtitulo: "Restauradora & Estética Dental",
+    menu: "Menú",
+    tratamientos: "Tratamientos",
     enlaces: [
+      ["#objetivo", "Filosofía"],
       ["#tratamientos", "Tratamientos"],
-      ["#proceso", "Proceso"],
-      ["#casos", "Casos"],
-      ["#preguntas", "Preguntas"],
+      ["#tecnologia", "Tecnología"],
+      ["#gabriela", "Gabriela"],
+      ["#consultorio", "Consultorio"],
+      ["#contacto", "Contacto"],
     ] as [string, string][],
     agendar: "Agendar cita",
-    menu: "Menú",
     cerrar: "Cerrar",
   },
+  intro: "Estética dental · Cuenca",
   hero: {
-    ceja: "Dra. Gabriela Abril · Cuenca, Ecuador",
-    titulo: ["La belleza", "de una sonrisa"],
-    tituloItalica: "bien diseñada.",
-    lead: "Diseño de sonrisa, restauraciones estéticas y ortodoncia invisible. Resultados naturales, planificados en digital antes de tocar un solo diente.",
-    ctaPrincipal: "Agenda por WhatsApp",
-    ctaSecundario: "Ver casos",
-    guiaCeja: "Guía de color",
-    guiaTexto: "Cada sonrisa tiene su tono. Lo elegimos según tu piel, tus labios y tu rostro, no según un catálogo.",
-    tono: "Tono",
-    arrastra: "Toca un tono",
+    titulo: ["Estética", "dental de"],
+    italica: "autor",
+    texto: "Restauradora y Estética Dental. Diseño de sonrisa y ortodoncia invisible con nuevas tecnologías.",
+    frase: ["Tu sonrisa,", "naturalmente", "mejor."],
+    pie: "Clips de video pendientes de grabación",
   },
-  sobre: {
-    ceja: "Sobre Gabriela",
-    declaracion: ["Una sonrisa bonita no es solo dientes blancos. Es ", "armonía", " con tu rostro."],
-    datos: [
-      ["Especialista", "En Odontología Restauradora y Estética Dental."],
-      ["Docente universitaria", "Universidad de Cuenca, Ecuador."],
-      ["Flujo digital", "Escaneo intraoral y diseño digital de sonrisa."],
-    ] as [string, string][],
+  cinta: ["Diseño de sonrisa", "Ortodoncia invisible", "Restauradora", "Nuevas tecnologías"],
+  manifiesto: {
+    ceja: "(02) Filosofía",
+    texto: "Cada sonrisa se diseña antes de tocar un solo diente. Natural, precisa y pensada para tu rostro.",
+    italicas: ["antes", "Natural,"],
+  },
+  objetivo: {
+    ceja: "Filosofía",
+    izquierda: "Mi objetivo es",
+    derecha:
+      "diseñar sonrisas que se vean naturales, en armonía con tu rostro, con técnicas actuales y un trato cercano en cada paso.",
+    cita: "Especialista en Restauradora y Estética Dental y docente de la Universidad de Cuenca.",
+    foto: "Retrato de Gabriela",
+    boton: "Conóceme",
   },
   tratamientos: {
     ceja: "Tratamientos",
-    titulo: ["Lo que podemos ", "transformar"],
+    indice: "Tratamientos:",
+    detalle: "Incluye:",
+    ver: "Ver",
     items: [
-      ["ESTÉTICA", "Diseño de sonrisa", "Planificamos forma, tamaño y color primero en pantalla. Ves tu nueva sonrisa antes de empezar."],
-      ["RESTAURADORA", "Carillas y restauraciones", "Recuperamos dientes desgastados, fracturados o manchados con materiales que se ven y se sienten naturales."],
-      ["ALINEACIÓN", "Ortodoncia invisible", "Alineadores transparentes para enderezar tus dientes sin brackets. Discretos en el trabajo y en las fotos."],
-      ["TECNOLOGÍA", "Nuevas tecnologías", "Escaneo digital en lugar de moldes incómodos, y una planificación más precisa."],
-    ] as [string, string, string][],
+      { nombre: ["Diseño de", "sonrisa"], resumen: "Forma, proporción y color planificados para tu rostro antes de empezar.", items: ["Planificación digital", "Prueba en boca", "Carillas"], foto: "Sonrisa de paciente" },
+      { nombre: ["Ortodoncia", "invisible"], resumen: "Alineadores transparentes para alinear tus dientes sin brackets visibles.", items: ["Valoración y escaneo", "Plan de tratamiento", "Seguimiento"], foto: "Alineador en mano" },
+      { nombre: ["Odontología", "restauradora"], resumen: "Dientes desgastados, manchados o fracturados, recuperados con naturalidad.", items: ["Restauraciones estéticas", "Carillas", "Coronas"], foto: "Detalle de restauración" },
+      { nombre: ["Nuevas", "tecnologías"], resumen: "Herramientas digitales para planificar con precisión y mostrarte el resultado antes.", items: ["Diseño digital", "Fotografía clínica", "Escaneo"], foto: "Equipo en el consultorio" },
+    ] as Tratamiento[],
   },
-  proceso: {
-    ceja: "Diseño de sonrisa, paso a paso",
-    titulo: ["De la primera cita a tu ", "nueva sonrisa"],
-    pasos: [
-      ["Escaneo digital", "Escaneamos tus dientes en minutos, sin moldes. Así obtenemos un modelo exacto de tu boca."],
-      ["Diseño digital", "Diseñamos forma y proporción en pantalla, a la medida de tu rostro y tus labios."],
-      ["Prueba en boca", "Pruebas el diseño en tu propia boca antes de cualquier trabajo definitivo."],
-      ["Tu sonrisa", "Realizamos el tratamiento final con porcelana o resina de alta estética, y te damos seguimiento."],
-    ] as [string, string][],
+  tecnologia: {
+    ceja: "Tecnología",
+    titulo: ["Tecnología al servicio de", "resultados", "naturales"],
+    lista: ["Diseño digital de sonrisa", "Escaneo digital", "Fotografía clínica", "Alineadores a medida"],
+    nota: "Lista por confirmar con Gabriela",
+    video: "Video del consultorio · pendiente",
   },
-  casos: {
+  caso: {
     ceja: "Casos",
-    titulo: ["Antes y ", "después"],
+    titulo: ["Antes y", "después"],
+    arrastra: "Arrastra",
     antes: "Antes",
     despues: "Después",
-    ilustracion: "Ilustración",
-    nota: "Reemplazar con fotos reales de pacientes (con consentimiento).",
+    nombre: "Diseño de sonrisa",
+    nota: "Fotos reales de pacientes, con consentimiento · pendiente",
     comparar: "Comparar antes y después",
-    anterior: "Caso anterior",
-    siguiente: "Caso siguiente",
-    lista: [
-      ["Diseño de sonrisa con carillas", "Forma, proporción y color · 6 dientes"],
-      ["Restauración estética", "Bordes desgastados y fracturados"],
-      ["Ortodoncia invisible", "Apiñamiento corregido con alineadores"],
+  },
+  gabriela: {
+    nombre: ["Gabriela", "Abril"],
+    datos: [
+      ["Especialidad", "Restauradora y Estética Dental"],
+      ["Docencia", "Universidad de Cuenca"],
+      ["Enfoque", "Diseño de sonrisa y nuevas tecnologías"],
     ] as [string, string][],
+    frase: "Enseñar lo que practico me obliga a estar al día con cada técnica y cada material.",
+    arcos: ["Estoy aquí", "para realzar", "tu sonrisa"],
+    porque: "¿Por qué yo?",
   },
-  docencia: {
-    ceja: "Docencia",
-    frase: ["Enseña lo que ", "practica", " cada día."],
-    texto: "Como docente de la Universidad de Cuenca, Gabriela se mantiene al día con las técnicas y materiales que enseña a la nueva generación de odontólogos.",
+  consultorio: {
+    ceja: "El consultorio",
+    titulo: ["Un lugar", "sereno"],
+    texto: "Luz natural y tiempo sin apuros, en Cuenca.",
+    fotos: ["Sala de atención", "Recepción", "Detalle de materiales", "Luz de la mañana", "Instrumental"],
   },
-  resenas: {
-    ceja: "Pacientes",
-    titulo: ["En sus ", "propias palabras"],
-    texto: "Aquí va una reseña real de Google.",
-    nombre: "Nombre de paciente",
-    pendiente: "Pendiente",
-  },
-  faq: {
-    ceja: "Preguntas frecuentes",
-    titulo: ["Antes de tu ", "primera cita"],
-    items: [
-      ["¿Mi sonrisa se verá natural?", "Ese es el objetivo. Diseñamos forma y color en proporción a tu rostro, y pruebas el diseño en tu boca antes del tratamiento definitivo."],
-      ["¿El diseño de sonrisa duele?", "La mayoría de pasos son cómodos. Cuando un procedimiento lo requiere, usamos anestesia local. Te explicamos cada paso en tu valoración."],
-      ["¿Cuánto dura la ortodoncia invisible?", "Depende de cada caso. Después del escaneo digital te damos un tiempo estimado."],
-      ["¿Atienden en inglés?", "Sí. Recibimos pacientes del exterior y residentes de Cuenca que prefieren el inglés."],
-      ["¿Cómo agendo una cita?", "Escríbenos por WhatsApp y buscamos un horario que te funcione."],
-    ] as [string, string][],
+  instagram: { ceja: "Instagram" },
+  cierre: {
+    frase: ["Tu sonrisa", "perfecta,", "cobra", "vida"],
+    foto: "Silueta · foto pendiente",
   },
   contacto: {
-    ceja: "Contacto",
-    titulo: ["Diseñemos ", "la tuya."],
-    whatsapp: "Escribir por WhatsApp",
-    mapa: "Abrir en Google Maps",
-    direccion: "Dirección",
-    direccionValor: "Dirección pendiente · Cuenca, Ecuador",
-    horario: "Horario",
-    horarioValor: ["Lun–Vie · horario pendiente", "Sáb · con cita previa"],
-    copiar: "Copiar número",
-    copiado: "Copiado",
+    titulo: ["Agenda tu", "valoración"],
+    nombre: "Nombre",
+    telefono: "Teléfono",
+    mensaje: "¿Qué te gustaría mejorar de tu sonrisa?",
+    enviar: "Enviar por WhatsApp",
+    saludo: "Hola Dra. Gabriela, soy",
+    columnas: [
+      ["Tratamientos", ["Diseño de sonrisa", "Ortodoncia invisible", "Restauradora", "Nuevas tecnologías"]],
+      ["Consultorio", ["[Dirección del consultorio]", "Cuenca, Ecuador", "[Días y horas de atención]"]],
+    ] as [string, string[]][],
+    sebastian: "Ortodoncia: Dr. Sebastián Silva",
+    derechos: "© 2026 Dra. Gabriela Abril",
   },
-  pie: { ortodoncia: "Ortodoncia:", flotante: "Agendar" },
-  retrato: "Retrato pendiente",
+  pendiente: "pendiente",
 };
 
 export type Contenido = typeof es;
@@ -146,114 +135,148 @@ const en: Contenido = {
   meta: {
     titulo: "Dr. Gabriela Abril · Aesthetic Dentistry in Cuenca",
     descripcion:
-      "Specialist in Restorative and Aesthetic Dentistry in Cuenca, Ecuador. Smile design, veneers and invisible orthodontics.",
+      "Specialist in Restorative and Aesthetic Dentistry in Cuenca, Ecuador. Smile design, invisible orthodontics and new technologies.",
   },
   nav: {
-    subtitulo: "Restorative & Aesthetic Dentistry",
+    menu: "Menu",
+    tratamientos: "Treatments",
     enlaces: [
+      ["#objetivo", "Philosophy"],
       ["#tratamientos", "Treatments"],
-      ["#proceso", "Process"],
-      ["#casos", "Cases"],
-      ["#preguntas", "FAQ"],
+      ["#tecnologia", "Technology"],
+      ["#gabriela", "Gabriela"],
+      ["#consultorio", "Studio"],
+      ["#contacto", "Contact"],
     ],
     agendar: "Book a visit",
-    menu: "Menu",
     cerrar: "Close",
   },
+  intro: "Aesthetic dentistry · Cuenca",
   hero: {
-    ceja: "Dr. Gabriela Abril · Cuenca, Ecuador",
-    titulo: ["The beauty", "of a smile"],
-    tituloItalica: "by design.",
-    lead: "Smile design, aesthetic restorations and invisible orthodontics. Natural results, planned digitally before we touch a single tooth.",
-    ctaPrincipal: "Book via WhatsApp",
-    ctaSecundario: "See cases",
-    guiaCeja: "Shade guide",
-    guiaTexto: "Every smile has its own shade. We choose it for your skin, your lips and your face, never from a catalog.",
-    tono: "Shade",
-    arrastra: "Tap a shade",
+    titulo: ["Signature", "aesthetic"],
+    italica: "dentistry",
+    texto: "Restorative and Aesthetic Dentistry. Smile design and invisible orthodontics with new technologies.",
+    frase: ["Your smile,", "naturally", "better."],
+    pie: "Video clips to be filmed",
   },
-  sobre: {
-    ceja: "About",
-    declaracion: ["A beautiful smile is more than white teeth. It is ", "harmony", " with your face."],
-    datos: [
-      ["Specialist", "In Restorative and Aesthetic Dentistry."],
-      ["University lecturer", "Universidad de Cuenca, Ecuador."],
-      ["Digital workflow", "Intraoral scanning and digital smile design."],
-    ],
+  cinta: ["Smile design", "Invisible orthodontics", "Restorative", "New technologies"],
+  manifiesto: {
+    ceja: "(02) Philosophy",
+    texto: "Every smile is designed before a single tooth is touched. Natural, precise and made for your face.",
+    italicas: ["before", "Natural,"],
+  },
+  objetivo: {
+    ceja: "Philosophy",
+    izquierda: "My goal is",
+    derecha:
+      "to design smiles that look natural, in harmony with your face, using current techniques and close care at every step.",
+    cita: "Specialist in Restorative and Aesthetic Dentistry and lecturer at the Universidad de Cuenca.",
+    foto: "Portrait of Gabriela",
+    boton: "About me",
   },
   tratamientos: {
     ceja: "Treatments",
-    titulo: ["What we can ", "transform"],
+    indice: "Treatments:",
+    detalle: "Includes:",
+    ver: "View",
     items: [
-      ["AESTHETICS", "Smile design", "We plan shape, size and shade on screen first. You see your new smile before we begin."],
-      ["RESTORATIVE", "Veneers & restorations", "We restore worn, chipped or stained teeth with materials that look and feel natural."],
-      ["ALIGNMENT", "Invisible orthodontics", "Clear aligners to straighten your teeth without brackets. Discreet at work and in photos."],
-      ["TECHNOLOGY", "New technologies", "Digital scanning instead of uncomfortable impressions, and more precise planning."],
+      { nombre: ["Smile", "design"], resumen: "Shape, proportion and shade planned for your face before we begin.", items: ["Digital planning", "Mock-up", "Veneers"], foto: "Patient smile" },
+      { nombre: ["Invisible", "orthodontics"], resumen: "Clear aligners to straighten your teeth without visible braces.", items: ["Assessment and scan", "Treatment plan", "Follow-up"], foto: "Aligner in hand" },
+      { nombre: ["Restorative", "dentistry"], resumen: "Worn, stained or chipped teeth, restored to look natural.", items: ["Aesthetic restorations", "Veneers", "Crowns"], foto: "Restoration detail" },
+      { nombre: ["New", "technologies"], resumen: "Digital tools to plan precisely and show you the result first.", items: ["Digital design", "Clinical photography", "Scanning"], foto: "Equipment in the studio" },
     ],
   },
-  proceso: {
-    ceja: "Smile design, step by step",
-    titulo: ["From the first visit to your ", "new smile"],
-    pasos: [
-      ["Digital scan", "We scan your teeth in minutes, no impressions. That gives us an exact model of your mouth."],
-      ["Digital design", "We design shape and proportion on screen, tailored to your face and lips."],
-      ["Mock-up", "You try the design in your own mouth before any definitive work."],
-      ["Your smile", "We complete the final treatment in high-aesthetic porcelain or resin, with follow-up care."],
-    ],
+  tecnologia: {
+    ceja: "Technology",
+    titulo: ["Technology for", "natural", "results"],
+    lista: ["Digital smile design", "Digital scanning", "Clinical photography", "Custom aligners"],
+    nota: "List to be confirmed with Gabriela",
+    video: "Studio video · pending",
   },
-  casos: {
+  caso: {
     ceja: "Cases",
-    titulo: ["Before & ", "after"],
+    titulo: ["Before &", "after"],
+    arrastra: "Drag",
     antes: "Before",
     despues: "After",
-    ilustracion: "Illustration",
-    nota: "Replace with real patient photos (with consent).",
+    nombre: "Smile design",
+    nota: "Real patient photos, with consent · pending",
     comparar: "Compare before and after",
-    anterior: "Previous case",
-    siguiente: "Next case",
-    lista: [
-      ["Smile design with veneers", "Shape, proportion and shade · 6 teeth"],
-      ["Aesthetic restoration", "Worn and chipped edges"],
-      ["Invisible orthodontics", "Crowding corrected with aligners"],
+  },
+  gabriela: {
+    nombre: ["Gabriela", "Abril"],
+    datos: [
+      ["Specialty", "Restorative & Aesthetic Dentistry"],
+      ["Teaching", "Universidad de Cuenca"],
+      ["Focus", "Smile design and new technologies"],
     ],
+    frase: "Teaching what I practice keeps me current with every technique and every material.",
+    arcos: ["I am here", "to enhance", "your smile"],
+    porque: "Why me?",
   },
-  docencia: {
-    ceja: "Teaching",
-    frase: ["She teaches what she ", "practices", " every day."],
-    texto: "As a lecturer at the Universidad de Cuenca, Gabriela keeps up with the techniques and materials she teaches to the next generation of dentists.",
+  consultorio: {
+    ceja: "The studio",
+    titulo: ["A calm", "place"],
+    texto: "Natural light and unhurried time, in Cuenca.",
+    fotos: ["Treatment room", "Reception", "Material details", "Morning light", "Instruments"],
   },
-  resenas: {
-    ceja: "Patients",
-    titulo: ["In their ", "own words"],
-    texto: "A real Google review goes here.",
-    nombre: "Patient name",
-    pendiente: "Pending",
-  },
-  faq: {
-    ceja: "FAQ",
-    titulo: ["Before your ", "first visit"],
-    items: [
-      ["Will my smile look natural?", "That is the goal. We design shape and shade in proportion to your face, and you try the design in your mouth before the definitive treatment."],
-      ["Does smile design hurt?", "Most steps are comfortable. When a procedure needs it, we use local anesthesia. We explain each step at your consultation."],
-      ["How long does invisible orthodontics take?", "It depends on each case. After the digital scan we give you an estimated timeline."],
-      ["Do you see patients in English?", "Yes. We welcome patients from abroad and residents of Cuenca who prefer English."],
-      ["How do I book?", "Message us on WhatsApp and we will find a time that works for you."],
-    ],
+  instagram: { ceja: "Instagram" },
+  cierre: {
+    frase: ["Bringing", "your perfect", "smile", "to life"],
+    foto: "Silhouette · photo pending",
   },
   contacto: {
-    ceja: "Contact",
-    titulo: ["Let's design ", "yours."],
-    whatsapp: "Message on WhatsApp",
-    mapa: "Open in Google Maps",
-    direccion: "Address",
-    direccionValor: "Address pending · Cuenca, Ecuador",
-    horario: "Hours",
-    horarioValor: ["Mon–Fri · hours pending", "Sat · by appointment"],
-    copiar: "Copy number",
-    copiado: "Copied",
+    titulo: ["Book your", "consultation"],
+    nombre: "Name",
+    telefono: "Phone",
+    mensaje: "What would you like to improve about your smile?",
+    enviar: "Send via WhatsApp",
+    saludo: "Hello Dr. Gabriela, my name is",
+    columnas: [
+      ["Treatments", ["Smile design", "Invisible orthodontics", "Restorative", "New technologies"]],
+      ["Studio", ["[Studio address]", "Cuenca, Ecuador", "[Opening days and hours]"]],
+    ],
+    sebastian: "Orthodontics: Dr. Sebastián Silva",
+    derechos: "© 2026 Dr. Gabriela Abril",
   },
-  pie: { ortodoncia: "Orthodontics:", flotante: "Book" },
-  retrato: "Portrait pending",
+  pendiente: "pending",
 };
 
 export const contenido: Record<Idioma, Contenido> = { es, en };
+
+// ---------------------------------------------------------------------------
+// IMÁGENES DE REFERENCIA (Unsplash, licencia libre). Son provisionales: solo para que el cliente vea
+// cómo se va a ver la web. Se reemplazan con la sesión de fotos y video de Gabriela.
+// ---------------------------------------------------------------------------
+const u = (id: string, w = 1600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
+
+export const REF = {
+  hero: [u("1489278353717-f64c6ee8a4d2", 2000), u("1629909613654-28e377c37b09", 2000), u("1777331903190-341a3dd0441b", 2000)],
+  pastillas: [u("1677026010083-78ec7f1b84ed", 600), u("1564420228450-d9a5bc8d6565", 600)],
+  tratamientos: [
+    u("1677026010083-78ec7f1b84ed"), // diseño de sonrisa
+    u("1564420228450-d9a5bc8d6565"), // ortodoncia invisible
+    u("1606811971618-4486d14f3f99"), // restauradora
+    u("1588776814546-1ffcf47267a5"), // nuevas tecnologías
+  ],
+  tecnologiaFondo: u("1598256989800-fe5f95da9787", 2000),
+  tecnologia: [u("1593022356769-11f762e25ed9"), u("1771442873038-dda05b6ca447"), u("1606811856475-5e6fcdc6e509"), u("1564420228450-d9a5bc8d6565")],
+  antes: u("1670250492416-570b5b7343b1"),
+  despues: u("1654373535457-383a0a4d00f9"),
+  consultorio: [
+    u("1704455306251-b4634215d98f"),
+    u("1762625570087-6d98fca29531"),
+    u("1629909614456-6b1c5c94cecc"),
+    u("1629909613654-28e377c37b09"),
+    u("1648775507324-b48dd3791fa5"),
+  ],
+  instagram: [
+    u("1567516364473-233c4b6fcfbe", 600),
+    u("1681939282781-341ac4f61996", 600),
+    u("1617812191081-2a24e3f30e45", 600),
+    u("1593022356769-11f762e25ed9", 600),
+    u("1548382131-e0ebb1f0cdea", 600),
+    u("1667133295352-ef4c83620e8e", 600),
+  ],
+  cierre: u("1594756154841-ac5d160dbf46", 2000),
+};

@@ -14,6 +14,7 @@ export function ScrollSuave() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const l = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, anchors: { offset: -72 } });
     lenis = l;
+    if (document.documentElement.dataset.intro === "1") l.stop();
     l.on("scroll", ScrollTrigger.update);
     const tick = (t: number) => l.raf(t * 1000);
     gsap.ticker.add(tick);

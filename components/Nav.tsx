@@ -1,91 +1,140 @@
 "use client";
+// Barra como en la referencia: marca a la izquierda, "Menú" y "Tratamientos" al centro, idioma y
+// "Agendar cita" a la derecha. Se invierte sola sobre fondos claros y oscuros.
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Boton } from "./Boton";
+import { Magnetico } from "./Magnetico";
 import { lenis } from "./ScrollSuave";
-import type { Contenido, Idioma } from "@/lib/content";
+import { WHATSAPP, type Contenido, type Idioma } from "@/lib/content";
+
+const curva = [0.76, 0, 0.24, 1] as const;
 
 export function Nav({ t, lang }: { t: Contenido; lang: Idioma }) {
-  const [abierto, setAbierto] = useState(false);
-  const [oculta, setOculta] = useState(false);
-
-  // La barra se esconde al bajar y vuelve al subir
-  useEffect(() => {
-    let ultimo = window.scrollY;
-    const f = () => {
-      const y = window.scrollY;
-      setOculta(y > 160 && y > ultimo);
-      ultimo = y;
-    };
-    window.addEventListener("scroll", f, { passive: true });
-    return () => window.removeEventListener("scroll", f);
-  }, []);
+  const [menu, setMenu] = useState(false);
+  const [panel, setPanel] = useState(false);
 
   useEffect(() => {
-    if (abierto) lenis?.stop();
+    if (menu) lenis?.stop();
     else lenis?.start();
-  }, [abierto]);
+  }, [menu]);
+
+  useEffect(() => {
+    if (!panel) return;
+    const cerrar = () => setPanel(false);
+    window.addEventListener("scroll", cerrar, { once: true, passive: true });
+    return () => window.removeEventListener("scroll", cerrar);
+  }, [panel]);
+
+  const idiomas = (
+    <div className="nav-idioma" role="group" aria-label="Idioma / Language">
+      {(["es", "en"] as const).map((l) => (
+        <Link key={l} href={`/${l}`} className={l === lang ? "on" : ""} aria-current={l === lang ? "page" : undefined}>
+          {l.toUpperCase()}
+        </Link>
+      ))}
+    </div>
+  );
 
   return (
     <>
-      <motion.header className="nav" animate={{ y: oculta && !abierto ? "-110%" : "0%" }} transition={{ duration: 0.5, ease: [0.2, 0.7, 0.1, 1] }}>
-        <div className="marco nav-fila">
-          <a className="firma" href="#inicio">
-            Gabriela Abril
-            <small>{t.nav.subtitulo}</small>
+      <header className="nav">
+        <div className="nav-fila lado">
+          <a className="nav-marca" href="#inicio" aria-label="Dra. Gabriela Abril">
+            <span className="nav-sello">GA</span>
+            <span className="nav-lineas">
+              Gabriela Abril
+              <br />
+              {lang === "es" ? "Estética Dental" : "Aesthetic Dentistry"}
+            </span>
           </a>
-          <ul className="nav-enlaces">
-            {t.nav.enlaces.map(([href, txt]) => (
-              <li key={href}>
-                <a href={href}>{txt}</a>
-              </li>
-            ))}
-          </ul>
-          <div className="nav-acciones">
-            <div className="idioma" role="group" aria-label="Idioma / Language">
-              {(["es", "en"] as const).map((l) => (
-                <Link key={l} href={`/${l}`} className={l === lang ? "on" : ""} aria-current={l === lang ? "page" : undefined} scroll={false}>
-                  {l === lang && <motion.span layoutId="idioma-pastilla" className="pastilla" transition={{ type: "spring", stiffness: 380, damping: 30 }} />}
-                  <span className="idioma-txt">{l.toUpperCase()}</span>
-                </Link>
-              ))}
-            </div>
-            <Boton href="#contacto" lleno chico className="solo-escritorio">
-              {t.nav.agendar}
-            </Boton>
-            <button type="button" className="nav-menu" onClick={() => setAbierto(true)} aria-label={t.nav.menu} aria-expanded={abierto}>
-              <Menu size={20} strokeWidth={1.4} />
+          <div className="nav-centro">
+            <button type="button" onClick={() => setMenu(true)} aria-expanded={menu}>
+              {t.nav.menu}
+              <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true">
+                <path d="M0 2h14M0 8h14" />
+              </svg>
+            </button>
+            <button type="button" className="solo-escritorio" onClick={() => setPanel((p) => !p)} aria-expanded={panel}>
+              {t.nav.tratamientos}
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" style={{ transform: panel ? "rotate(180deg)" : "none", transition: "transform .4s" }}>
+                <path d="M1 1l4 4 4-4" />
+              </svg>
             </button>
           </div>
+          <div className="nav-der">
+            {idiomas}
+            <Magnetico fuerza={0.25}>
+              <a className="pastilla-btn pastilla-clara" href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener">
+                {t.nav.agendar} <i aria-hidden="true">+</i>
+              </a>
+            </Magnetico>
+          </div>
         </div>
-      </motion.header>
+      </header>
 
       <AnimatePresence>
-        {abierto && (
+        {panel && (
           <motion.div
-            className="menu-movil"
+            className="panel-trat"
+            initial={{ opacity: 0, y: -10, x: "-50%", filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, x: "-50%", filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, x: "-50%", filter: "blur(8px)" }}
+            transition={{ duration: 0.45, ease: curva }}
+          >
+            {t.tratamientos.items.map((x, i) => (
+              <a key={x.foto} href="#tratamientos" onClick={() => setPanel(false)}>
+                <span>
+                  <span style={{ color: "#888", marginRight: 12 }}>{String(i + 1).padStart(2, "0")}</span>
+                  {x.nombre.join(" ")}
+                </span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {menu && (
+          <motion.div
+            className="menu lado"
             initial={{ clipPath: "inset(0 0 100% 0)" }}
             animate={{ clipPath: "inset(0 0 0% 0)" }}
-            exit={{ clipPath: "inset(0 0 100% 0)" }}
-            transition={{ duration: 0.7, ease: [0.7, 0, 0.2, 1] }}
+            exit={{ clipPath: "inset(100% 0 0% 0)" }}
+            transition={{ duration: 0.85, ease: curva }}
           >
-            <div className="marco menu-movil-cab">
-              <span className="firma">Gabriela Abril</span>
-              <button type="button" className="nav-menu" onClick={() => setAbierto(false)} aria-label={t.nav.cerrar}>
-                <X size={22} strokeWidth={1.4} />
+            <div className="menu-cab">
+              <span className="nav-sello">GA</span>
+              <button type="button" className="menu-cerrar" onClick={() => setMenu(false)} aria-label={t.nav.cerrar}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
               </button>
             </div>
-            <ul className="marco">
-              {[...t.nav.enlaces, ["#contacto", t.nav.agendar] as [string, string]].map(([href, txt], i) => (
-                <motion.li key={href} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + i * 0.06, duration: 0.6 }}>
-                  <a href={href} onClick={() => setAbierto(false)}>
+            <ul>
+              {t.nav.enlaces.map(([href, txt], i) => (
+                <li key={href}>
+                  <motion.a
+                    href={href}
+                    onClick={() => setMenu(false)}
+                    initial={{ y: "105%" }}
+                    animate={{ y: "0%" }}
+                    exit={{ y: "-105%" }}
+                    transition={{ duration: 0.9, ease: curva, delay: 0.25 + i * 0.05 }}
+                  >
+                    <small>{String(i + 1).padStart(2, "0")}</small>
                     {txt}
-                  </a>
-                </motion.li>
+                  </motion.a>
+                </li>
               ))}
             </ul>
+            <div className="menu-pie">
+              {idiomas}
+              <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener">
+                {t.nav.agendar} ↗
+              </a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

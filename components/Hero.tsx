@@ -1,96 +1,111 @@
 "use client";
-import dynamic from "next/dynamic";
-import { motion } from "motion/react";
-import { Titular } from "./Titular";
-import { Boton } from "./Boton";
-import { tonos, WHATSAPP, type Contenido } from "@/lib/content";
-import { elegirTono, useTono } from "@/lib/tono";
-import { useMovil, useReducido, useWebGL } from "@/lib/hooks";
+// Hero como en la referencia: mitad fondo claro, mitad video. El título cruza las dos mitades
+// (oscuro sobre el claro, blanco sobre el video). Los clips rotan solos. Con el scroll el video
+// llena la pantalla y una frase enorme cruza de derecha a izquierda.
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
+import { useGSAP } from "@gsap/react";
+import { useEffect, useRef, useState } from "react";
+import { REF, type Contenido } from "@/lib/content";
 
-const DienteHero = dynamic(() => import("./three/DienteHero"), { ssr: false, loading: () => <Poster /> });
+const CLIPS_HERO = REF.hero;
 
-// Imagen de reposo mientras carga el 3D (o si el dispositivo no tiene WebGL)
-function Poster() {
+gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
+
+function Titulo({ t }: { t: Contenido }) {
   return (
-    <div className="poster" aria-hidden="true">
-      <span className="poster-disco" />
-      <svg viewBox="-0.6 -0.8 1.2 1.6" className="poster-diente">
-        <path d="M-0.39 0.66 Q0 0.7 0.37 0.66 Q0.475 0.65 0.465 0.5 C0.465 0.08 0.41 -0.36 0.3 -0.56 Q0 -0.8 -0.3 -0.56 C-0.425 -0.36 -0.47 0.08 -0.455 0.56 Q-0.45 0.665 -0.39 0.66Z" />
-      </svg>
-    </div>
+    <h1 className="hero-titulo ancha" aria-hidden="true">
+      <span className="fila">{t.hero.titulo[0]}</span>
+      <span className="fila">{t.hero.titulo[1]}</span>
+      <span className="fila it">{t.hero.italica}</span>
+    </h1>
   );
 }
 
-export function Hero({ t, lang }: { t: Contenido; lang: "es" | "en" }) {
-  const indice = useTono();
-  const movil = useMovil();
-  const reducido = useReducido();
-  const webgl = useWebGL();
-  const tono = tonos[indice];
+export function Hero({ t }: { t: Contenido }) {
+  const raiz = useRef<HTMLElement>(null);
+  const [clip, setClip] = useState(0);
+
+  // Rotación de clips cada 4,5 s
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => setClip((c) => (c + 1) % CLIPS_HERO.length), 4500);
+    return () => clearInterval(id);
+  }, []);
+
+  useGSAP(
+    () => {
+      const q = gsap.utils.selector(raiz);
+      const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reducido) return;
+      const movil = window.matchMedia("(max-width: 760px)").matches;
+
+      // Entrada: las filas del título suben (en las dos capas a la vez) y el video se abre desde el borde
+      const filas = q(".hero-titulo .fila");
+      const espera = document.documentElement.dataset.intro === "1" ? 1.8 : 0.15;
+      const entrada = gsap.timeline({ delay: espera });
+      entrada
+        .from(filas, { yPercent: 40, opacity: 0, filter: "blur(18px)", duration: 1.6, ease: "expo.out", stagger: { each: 0.1, grid: [2, 3], from: "start" } }, 0)
+        .from(q(".hero-video"), { clipPath: movil ? "inset(100% 0% 0% 0%)" : "inset(0% 0% 0% 100%)", duration: 1.8, ease: "expo.inOut" }, 0)
+        .from(q(".hero-clips"), { scale: 1.35, duration: 2.4, ease: "expo.out" }, 0.2)
+        .from(q(".hero-pie > *"), { y: 16, opacity: 0, duration: 1, ease: "expo.out", stagger: 0.05 }, 0.9);
+
+      // Scroll: el video llena la pantalla, el título se va y la frase cruza
+      const frase = q(".hero-frase")[0] as HTMLElement;
+      const tl = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: { trigger: q(".hero-pin")[0], start: "top top", end: "+=220%", pin: true, scrub: 1, anticipatePin: 1 },
+      });
+      tl.fromTo(q(".hero-video"), { clipPath: movil ? "inset(58% 0% 0% 0%)" : "inset(0% 0% 0% 50%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.45 }, 0)
+        .fromTo(q(".hero-clips"), { y: 0 }, { y: 0, duration: 1 }, 0)
+        .to(q(".hero-titulo"), { yPercent: -70, opacity: 0, filter: "blur(10px)", duration: 0.35 }, 0.2)
+        .to(q(".hero-pie"), { opacity: 0, duration: 0.2 }, 0.15)
+        .fromTo(frase, { x: () => window.innerWidth * 0.9 }, { x: () => -(frase.scrollWidth - window.innerWidth * 0.55), duration: 0.75, ease: "none" }, 0.3)
+
+    },
+    { scope: raiz }
+  );
 
   return (
-    <div className="hero" id="inicio">
-      <div className="marco hero-grid">
-        <div className="hero-texto">
-          <motion.p className="ceja" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }}>
-            {t.hero.ceja}
-          </motion.p>
-          <Titular as="h1" alCargar retraso={0.15} className="hero-titulo">
-            {t.hero.titulo[0]}
-            <br />
-            {t.hero.titulo[1]}
-            <br />
-            <em>{t.hero.tituloItalica}</em>
-          </Titular>
-          <svg className="arco-sonrisa" viewBox="0 0 420 40" aria-hidden="true">
-            <path d="M2 4 C 120 44, 300 44, 418 4" />
-          </svg>
-          <motion.div className="hero-baja" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.7 }}>
-            <p className="lead">{t.hero.lead}</p>
-            <div className="ctas">
-              <Boton href={`https://wa.me/${WHATSAPP}`} externo lleno>
-                {t.hero.ctaPrincipal}
-              </Boton>
-              <Boton href="#casos">{t.hero.ctaSecundario}</Boton>
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="hero-3d">
-          {webgl && !reducido ? <DienteHero movil={movil} /> : <Poster />}
-          <div className="hero-3d-pie">
-            <span className="ceja">{t.hero.tono}</span>
-            <motion.b key={tono.codigo} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              {tono.codigo}
-            </motion.b>
-            <span>{lang === "es" ? tono.es : tono.en}</span>
+    <section className="hero" ref={raiz} id="inicio">
+      <h1 className="oculto" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>
+        Dra. Gabriela Abril — {t.hero.titulo.join(" ")} {t.hero.italica}
+      </h1>
+      <div className="hero-pin">
+        {/* Capa clara */}
+        <div className="hero-base">
+          <Titulo t={t} />
+          <div className="hero-pie lado">
+            <p>{t.hero.texto}</p>
           </div>
         </div>
-      </div>
 
-      <div className="marco">
-        <div className="guia">
-          <div className="guia-cab">
-            <span className="ceja">{t.hero.guiaCeja}</span>
-            <p>{t.hero.guiaTexto}</p>
-          </div>
-          <div className="tabs" role="radiogroup" aria-label={t.hero.guiaCeja}>
-            {tonos.map((x, i) => (
-              <button
-                key={x.codigo}
-                type="button"
-                role="radio"
-                aria-checked={i === indice}
-                className={"tab" + (i === indice ? " activo" : "")}
-                style={{ ["--c" as string]: x.color }}
-                onClick={() => elegirTono(i)}
-              >
-                <span>{x.codigo}</span>
-              </button>
+        {/* Capa de video: misma posición del título, en blanco */}
+        <div className="hero-video">
+          <div className="hero-clips" aria-hidden="true">
+            {CLIPS_HERO.map((src, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={src} className={"hero-img " + (i === clip ? "on" : "")} src={src} alt="" />
             ))}
           </div>
+          <div className="hero-velo" aria-hidden="true" />
+          <Titulo t={t} />
+          <p className="hero-frase ancha" aria-hidden="true">
+            {t.hero.frase[0]} <span className="it">{t.hero.frase[1]}</span> {t.hero.frase[2]}
+          </p>
+          <div className="hero-pie lado">
+            <span className="ceja" style={{ color: "inherit" }}>
+              {t.hero.pie}
+            </span>
+            <div className="hero-indicador" aria-hidden="true">
+              {CLIPS_HERO.map((src, i) => (
+                <span key={src + clip} className={i === clip ? "on" : ""} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
