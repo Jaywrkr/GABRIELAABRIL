@@ -20,7 +20,7 @@ export function Foto({
     <div className={`foto ${clara ? "clara" : ""} ${className}`} style={style}>
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className="foto-fondo" src={src} alt={etiqueta} style={{ width: "100%", height: "120%", objectFit: "cover", filter: "grayscale(1) contrast(1.05)" }} loading="lazy" />
+        <img className="foto-fondo" src={src} alt={etiqueta} style={{ width: "100%", height: "120%", objectFit: "cover" }} loading="lazy" />
       ) : (
         <div className="foto-fondo" aria-hidden="true" />
       )}
